@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "resend": "^4.0.0",
-    "next": "15.3.3",
+    "next": "15.3.6",
     "react": "^19",
     "react-dom": "^19",
     "@radix-ui/react-avatar": "^1.1.3",
