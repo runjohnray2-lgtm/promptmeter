@@ -44,7 +44,7 @@ export const TEXT_MODELS: ModelInfo[] = [
   },
   {
     id: 'gemini-flash',
-    name: 'Gemini 2.0 Flash',
+    name: 'Gemini (Flash)',
     provider: 'Google',
     logo: '🔵',
     inputPer1MTokens: 0.10,
@@ -58,7 +58,7 @@ export const TEXT_MODELS: ModelInfo[] = [
   },
   {
     id: 'gpt-4o-mini',
-    name: 'GPT-4o mini',
+    name: 'ChatGPT (4o mini)',
     provider: 'OpenAI',
     logo: '🟢',
     inputPer1MTokens: 0.15,
@@ -72,7 +72,7 @@ export const TEXT_MODELS: ModelInfo[] = [
   },
   {
     id: 'claude-haiku',
-    name: 'Claude 3.5 Haiku',
+    name: 'Claude (Haiku)',
     provider: 'Anthropic',
     logo: '🟠',
     inputPer1MTokens: 0.80,
@@ -85,7 +85,7 @@ export const TEXT_MODELS: ModelInfo[] = [
   },
   {
     id: 'gemini-pro',
-    name: 'Gemini 1.5 Pro',
+    name: 'Gemini (Pro)',
     provider: 'Google',
     logo: '🔵',
     inputPer1MTokens: 1.25,
@@ -98,7 +98,7 @@ export const TEXT_MODELS: ModelInfo[] = [
   },
   {
     id: 'gpt-4o',
-    name: 'GPT-4o',
+    name: 'ChatGPT (4o)',
     provider: 'OpenAI',
     logo: '🟢',
     inputPer1MTokens: 2.50,
@@ -111,7 +111,7 @@ export const TEXT_MODELS: ModelInfo[] = [
   },
   {
     id: 'claude-sonnet',
-    name: 'Claude 3.5 Sonnet',
+    name: 'Claude (Sonnet)',
     provider: 'Anthropic',
     logo: '🟠',
     inputPer1MTokens: 3.00,
@@ -121,6 +121,34 @@ export const TEXT_MODELS: ModelInfo[] = [
     types: ['text'],
     url: 'https://claude.ai/new',
     canPrefill: true,
+  },
+  {
+    id: 'grok-mini',
+    name: 'Grok (Mini)',
+    provider: 'xAI',
+    logo: '𝕏',
+    inputPer1MTokens: 0.30,
+    outputPer1MTokens: 0.50,
+    speed: 'fast',
+    quality: 'budget',
+    notes: 'Budget Grok — great for quick tasks',
+    types: ['text'],
+    url: 'https://grok.com',
+    canPrefill: false,
+  },
+  {
+    id: 'grok',
+    name: 'Grok',
+    provider: 'xAI',
+    logo: '𝕏',
+    inputPer1MTokens: 1.25,
+    outputPer1MTokens: 2.50,
+    speed: 'fast',
+    quality: 'premium',
+    notes: 'Elon's AI — real-time web access',
+    types: ['text'],
+    url: 'https://grok.com',
+    canPrefill: false,
   },
 ]
 
@@ -153,7 +181,7 @@ export const IMAGE_MODELS: ModelInfo[] = [
   },
   {
     id: 'dalle-3',
-    name: 'DALL-E 3',
+    name: 'ChatGPT (DALL-E 3)',
     provider: 'OpenAI',
     logo: '🟢',
     costPerImage: 0.040,
@@ -177,7 +205,7 @@ export const IMAGE_MODELS: ModelInfo[] = [
   },
   {
     id: 'dalle-3-hd',
-    name: 'DALL-E 3 HD',
+    name: 'ChatGPT (DALL-E 3 HD)',
     provider: 'OpenAI',
     logo: '🟢',
     costPerImage: 0.080,
