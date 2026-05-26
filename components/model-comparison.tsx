@@ -3,9 +3,9 @@
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { getModelsForType, calcModelCost, getDuration, ModelInfo, ModelCostResult } from "@/lib/models"
+import { getModelsForType, calcModelCost, getDuration, ModelCostResult } from "@/lib/models"
 import { GenerationType } from "@/types"
-import { CheckCircle, ChevronDown, ChevronUp } from "lucide-react"
+import { CheckCircle, ChevronDown, ChevronUp, ExternalLink, Copy, Check } from "lucide-react"
 
 interface ModelComparisonProps {
   prompt: string
@@ -19,12 +19,22 @@ const QUALITY_COLOR = {
   premium: 'text-violet-400',
 }
 
+function buildUrl(baseUrl: string, prompt: string, canPrefill: boolean): string {
+  if (!canPrefill) return baseUrl
+  const encoded = encodeURIComponent(prompt)
+  if (baseUrl.includes('chatgpt.com')) return `https://chatgpt.com/?q=${encoded}`
+  if (baseUrl.includes('claude.ai')) return `https://claude.ai/new?q=${encoded}`
+  if (baseUrl.includes('gemini.google.com')) return `https://gemini.google.com/app?q=${encoded}`
+  return baseUrl
+}
+
 export function ModelComparison({ prompt, type }: ModelComparisonProps) {
   const allModels = getModelsForType(type)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     new Set(allModels.map(m => m.id))
   )
   const [open, setOpen] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const duration = useMemo(() => getDuration(prompt), [prompt])
 
@@ -49,6 +59,19 @@ export function ModelComparison({ prompt, type }: ModelComparisonProps) {
     })
   }
 
+  const handleUseThis = async (result: ModelCostResult) => {
+    // Always copy prompt to clipboard
+    try {
+      await navigator.clipboard.writeText(prompt)
+      setCopiedId(result.model.id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch {}
+
+    // Open in new tab
+    const url = buildUrl(result.model.url, prompt, result.model.canPrefill)
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   const formatUSD = (usd: number) => {
     if (usd < 0.001) return '<$0.001'
     if (usd < 0.01) return `$${usd.toFixed(4)}`
@@ -68,7 +91,7 @@ export function ModelComparison({ prompt, type }: ModelComparisonProps) {
           <div className="text-left">
             <p className="text-sm font-bold text-white">Compare Providers</p>
             <p className="text-xs text-gray-500">
-              See which LLM is cheapest for your prompt
+              See which LLM is cheapest — then use it in one click
             </p>
           </div>
         </div>
@@ -134,6 +157,7 @@ export function ModelComparison({ prompt, type }: ModelComparisonProps) {
                   const pct = maxCost > 0 ? (r.totalUSD / maxCost) * 100 : 0
                   const isCheapest = i === 0
                   const isMostExpensive = i === results.length - 1 && results.length > 1
+                  const isCopied = copiedId === r.model.id
 
                   return (
                     <motion.div
@@ -178,14 +202,34 @@ export function ModelComparison({ prompt, type }: ModelComparisonProps) {
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={cn(
-                            "text-base font-black font-mono",
-                            isCheapest ? "text-green-400" : "text-white"
-                          )}>
-                            {formatUSD(r.totalUSD)}
-                          </p>
-                          <p className="text-xs text-gray-600">{r.breakdown}</p>
+
+                        <div className="flex items-center gap-2">
+                          <div className="text-right mr-1">
+                            <p className={cn(
+                              "text-base font-black font-mono",
+                              isCheapest ? "text-green-400" : "text-white"
+                            )}>
+                              {formatUSD(r.totalUSD)}
+                            </p>
+                            <p className="text-xs text-gray-600">{r.breakdown}</p>
+                          </div>
+
+                          {/* USE THIS BUTTON */}
+                          <button
+                            onClick={() => handleUseThis(r)}
+                            className={cn(
+                              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+                              isCheapest
+                                ? "bg-green-500 hover:bg-green-400 text-black"
+                                : "bg-gray-700 hover:bg-gray-600 text-white border border-gray-600"
+                            )}
+                          >
+                            {isCopied ? (
+                              <><Check className="w-3 h-3" />Copied!</>
+                            ) : (
+                              <>Use This <ExternalLink className="w-3 h-3" /></>
+                            )}
+                          </button>
                         </div>
                       </div>
 
@@ -204,8 +248,20 @@ export function ModelComparison({ prompt, type }: ModelComparisonProps) {
                         />
                       </div>
 
+                      {/* Pre-fill note */}
+                      {r.model.canPrefill && (
+                        <p className="text-xs text-blue-400/70 mt-1.5">
+                          ✨ Your prompt will be pre-filled automatically
+                        </p>
+                      )}
+                      {!r.model.canPrefill && (
+                        <p className="text-xs text-gray-600 mt-1.5">
+                          📋 Prompt copied to clipboard — paste it when you arrive
+                        </p>
+                      )}
+
                       {r.model.notes && (
-                        <p className="text-xs text-gray-600 mt-1.5 italic">{r.model.notes}</p>
+                        <p className="text-xs text-gray-600 mt-1 italic">{r.model.notes}</p>
                       )}
                     </motion.div>
                   )
@@ -215,8 +271,8 @@ export function ModelComparison({ prompt, type }: ModelComparisonProps) {
               {/* Disclaimer */}
               <p className="text-xs text-gray-600 leading-relaxed border-t border-gray-800 pt-3">
                 ⚠️ These are direct <strong className="text-gray-500">API list prices</strong> in USD.
-                Platform credits (like Magica) include infrastructure, uptime, support, and markup —
-                so platform cost will differ. Use this as a relative comparison, not an exact invoice.
+                Platform credits include infrastructure, uptime, and markup — actual cost may differ.
+                Use this as a relative comparison to find the best value.
               </p>
             </div>
           </motion.div>

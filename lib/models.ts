@@ -6,15 +6,18 @@ export interface ModelInfo {
   provider: string
   logo: string
   // Pricing
-  inputPer1MTokens?: number   // text: per 1M input tokens
-  outputPer1MTokens?: number  // text: per 1M output tokens
-  costPerImage?: number        // image: per image (USD)
-  costPerSecond?: number       // video: per second (USD)
-  costPerKChars?: number       // audio: per 1000 characters (USD)
+  inputPer1MTokens?: number
+  outputPer1MTokens?: number
+  costPerImage?: number
+  costPerSecond?: number
+  costPerKChars?: number
   speed: 'fast' | 'medium' | 'slow'
   quality: 'budget' | 'standard' | 'premium'
   notes?: string
   types: GenerationType[]
+  // "Use This" button
+  url: string
+  canPrefill: boolean
 }
 
 export interface ModelCostResult {
@@ -36,6 +39,8 @@ export const TEXT_MODELS: ModelInfo[] = [
     quality: 'standard',
     notes: 'Cheapest smart model',
     types: ['text'],
+    url: 'https://chat.deepseek.com',
+    canPrefill: false,
   },
   {
     id: 'gemini-flash',
@@ -48,6 +53,8 @@ export const TEXT_MODELS: ModelInfo[] = [
     quality: 'standard',
     notes: 'Fast and cheap',
     types: ['text'],
+    url: 'https://gemini.google.com/app',
+    canPrefill: true,
   },
   {
     id: 'gpt-4o-mini',
@@ -60,6 +67,8 @@ export const TEXT_MODELS: ModelInfo[] = [
     quality: 'standard',
     notes: 'OpenAI budget tier',
     types: ['text'],
+    url: 'https://chatgpt.com',
+    canPrefill: true,
   },
   {
     id: 'claude-haiku',
@@ -71,6 +80,8 @@ export const TEXT_MODELS: ModelInfo[] = [
     speed: 'fast',
     quality: 'standard',
     types: ['text'],
+    url: 'https://claude.ai/new',
+    canPrefill: true,
   },
   {
     id: 'gemini-pro',
@@ -82,6 +93,8 @@ export const TEXT_MODELS: ModelInfo[] = [
     speed: 'medium',
     quality: 'premium',
     types: ['text'],
+    url: 'https://gemini.google.com/app',
+    canPrefill: true,
   },
   {
     id: 'gpt-4o',
@@ -90,9 +103,11 @@ export const TEXT_MODELS: ModelInfo[] = [
     logo: '🟢',
     inputPer1MTokens: 2.50,
     outputPer1MTokens: 10.00,
-    speed: 'fast',
+    speed: 'medium',
     quality: 'premium',
     types: ['text'],
+    url: 'https://chatgpt.com',
+    canPrefill: true,
   },
   {
     id: 'claude-sonnet',
@@ -104,6 +119,8 @@ export const TEXT_MODELS: ModelInfo[] = [
     speed: 'medium',
     quality: 'premium',
     types: ['text'],
+    url: 'https://claude.ai/new',
+    canPrefill: true,
   },
 ]
 
@@ -117,11 +134,13 @@ export const IMAGE_MODELS: ModelInfo[] = [
     costPerImage: 0.003,
     speed: 'fast',
     quality: 'budget',
-    notes: 'Fastest, cheapest',
+    notes: 'Fastest & cheapest',
     types: ['image'],
+    url: 'https://fal.ai/models/fal-ai/flux/schnell',
+    canPrefill: false,
   },
   {
-    id: 'sd-35',
+    id: 'stable-diffusion',
     name: 'Stable Diffusion 3.5',
     provider: 'Stability AI',
     logo: '🟣',
@@ -129,6 +148,8 @@ export const IMAGE_MODELS: ModelInfo[] = [
     speed: 'medium',
     quality: 'standard',
     types: ['image'],
+    url: 'https://stability.ai/stable-image',
+    canPrefill: false,
   },
   {
     id: 'dalle-3',
@@ -137,8 +158,10 @@ export const IMAGE_MODELS: ModelInfo[] = [
     logo: '🟢',
     costPerImage: 0.040,
     speed: 'medium',
-    quality: 'premium',
+    quality: 'standard',
     types: ['image'],
+    url: 'https://chatgpt.com',
+    canPrefill: true,
   },
   {
     id: 'flux-pro',
@@ -149,6 +172,8 @@ export const IMAGE_MODELS: ModelInfo[] = [
     speed: 'medium',
     quality: 'premium',
     types: ['image'],
+    url: 'https://fal.ai/models/fal-ai/flux-pro',
+    canPrefill: false,
   },
   {
     id: 'dalle-3-hd',
@@ -158,19 +183,35 @@ export const IMAGE_MODELS: ModelInfo[] = [
     costPerImage: 0.080,
     speed: 'slow',
     quality: 'premium',
-    notes: 'Highest OpenAI quality',
     types: ['image'],
+    url: 'https://chatgpt.com',
+    canPrefill: true,
   },
   {
-    id: 'ideogram-2',
+    id: 'ideogram',
     name: 'Ideogram 2.0',
     provider: 'Ideogram',
     logo: '🎨',
     costPerImage: 0.080,
     speed: 'medium',
     quality: 'premium',
-    notes: 'Best for text in images',
+    notes: 'Best text-in-image',
     types: ['image'],
+    url: 'https://ideogram.ai',
+    canPrefill: false,
+  },
+  {
+    id: 'midjourney',
+    name: 'Midjourney v6',
+    provider: 'Midjourney',
+    logo: '🌀',
+    costPerImage: 0.10,
+    speed: 'medium',
+    quality: 'premium',
+    notes: 'Artistic quality leader',
+    types: ['image'],
+    url: 'https://www.midjourney.com',
+    canPrefill: false,
   },
 ]
 
@@ -183,39 +224,46 @@ export const VIDEO_MODELS: ModelInfo[] = [
     logo: '🎬',
     costPerSecond: 0.05,
     speed: 'medium',
-    quality: 'premium',
+    quality: 'standard',
     types: ['video'],
+    url: 'https://runwayml.com',
+    canPrefill: false,
   },
   {
-    id: 'pika-2',
+    id: 'pika',
     name: 'Pika 2.0',
     provider: 'Pika Labs',
-    logo: '🎯',
+    logo: '🎭',
     costPerSecond: 0.08,
     speed: 'fast',
     quality: 'standard',
     types: ['video'],
+    url: 'https://pika.art',
+    canPrefill: false,
   },
   {
-    id: 'seedance-20',
+    id: 'seedance',
     name: 'Seedance 2.0',
     provider: 'ByteDance',
     logo: '🌱',
-    costPerSecond: 0.09,
-    speed: 'medium',
-    quality: 'premium',
-    notes: 'Used on Magica platform',
-    types: ['video'],
-  },
-  {
-    id: 'kling-16',
-    name: 'Kling 1.6',
-    provider: 'Kuaishou',
-    logo: '🎭',
     costPerSecond: 0.10,
     speed: 'medium',
     quality: 'premium',
     types: ['video'],
+    url: 'https://seedance.ai',
+    canPrefill: false,
+  },
+  {
+    id: 'kling',
+    name: 'Kling 1.6',
+    provider: 'Kuaishou',
+    logo: '🎯',
+    costPerSecond: 0.12,
+    speed: 'medium',
+    quality: 'premium',
+    types: ['video'],
+    url: 'https://klingai.com',
+    canPrefill: false,
   },
   {
     id: 'sora',
@@ -225,8 +273,10 @@ export const VIDEO_MODELS: ModelInfo[] = [
     costPerSecond: 0.15,
     speed: 'slow',
     quality: 'premium',
-    notes: 'OpenAI flagship video',
+    notes: 'Highest quality video',
     types: ['video'],
+    url: 'https://sora.com',
+    canPrefill: false,
   },
 ]
 
@@ -237,80 +287,74 @@ export const AUDIO_MODELS: ModelInfo[] = [
     name: 'OpenAI TTS',
     provider: 'OpenAI',
     logo: '🟢',
-    costPerKChars: 0.015,
+    costPerKChars: 15.00,
     speed: 'fast',
     quality: 'standard',
-    notes: 'Cheapest option',
     types: ['audio'],
+    url: 'https://platform.openai.com/playground/tts',
+    canPrefill: false,
   },
   {
     id: 'elevenlabs',
     name: 'ElevenLabs',
     provider: 'ElevenLabs',
-    logo: '🎙️',
-    costPerKChars: 0.30,
+    logo: '🔊',
+    costPerKChars: 300.00,
     speed: 'fast',
     quality: 'premium',
-    notes: 'Best voice quality',
+    notes: 'Most realistic voices',
     types: ['audio'],
-  },
-  {
-    id: 'playht',
-    name: 'PlayHT 2.0',
-    provider: 'PlayHT',
-    logo: '🎵',
-    costPerKChars: 0.30,
-    speed: 'medium',
-    quality: 'premium',
-    types: ['audio'],
+    url: 'https://elevenlabs.io',
+    canPrefill: false,
   },
 ]
 
+// ── HELPERS ──────────────────────────────────────────────
 export function getModelsForType(type: GenerationType): ModelInfo[] {
-  switch (type) {
-    case 'text': return TEXT_MODELS
-    case 'image': return IMAGE_MODELS
-    case 'video': return VIDEO_MODELS
-    case 'audio': return AUDIO_MODELS
-    default: return TEXT_MODELS
-  }
+  const all = [...TEXT_MODELS, ...IMAGE_MODELS, ...VIDEO_MODELS, ...AUDIO_MODELS]
+  return all.filter(m => m.types.includes(type))
+}
+
+const AVG_CHARS_PER_TOKEN = 4
+const AVG_OUTPUT_MULTIPLIER = 3
+
+export function getDuration(prompt: string): number {
+  const lower = prompt.toLowerCase()
+  const match = lower.match(/(\d+)\s*(?:second|sec|s\b)/)
+  if (match) return parseInt(match[1])
+  if (lower.includes('short')) return 5
+  if (lower.includes('long')) return 30
+  if (lower.includes('minute')) return 60
+  return 10
 }
 
 export function calcModelCost(
   model: ModelInfo,
   type: GenerationType,
-  promptText: string,
-  durationSeconds = 8
+  prompt: string,
+  duration: number
 ): ModelCostResult {
-  const wordCount = promptText.trim().split(/\s+/).length
   let totalUSD = 0
   let breakdown = ''
 
-  if (type === 'text' && model.inputPer1MTokens && model.outputPer1MTokens) {
-    const inputTokens = wordCount * 1.3
-    const outputTokens = wordCount * 2.6  // estimated output
+  if (model.inputPer1MTokens) {
+    const inputTokens = Math.ceil(prompt.length / AVG_CHARS_PER_TOKEN)
+    const outputTokens = inputTokens * AVG_OUTPUT_MULTIPLIER
     const inputCost = (inputTokens / 1_000_000) * model.inputPer1MTokens
-    const outputCost = (outputTokens / 1_000_000) * model.outputPer1MTokens
+    const outputCost = (outputTokens / 1_000_000) * (model.outputPer1MTokens ?? model.inputPer1MTokens)
     totalUSD = inputCost + outputCost
-    breakdown = `~${Math.round(inputTokens)} input + ~${Math.round(outputTokens)} output tokens`
-  } else if (type === 'image' && model.costPerImage) {
+    breakdown = `~${inputTokens + outputTokens} tokens`
+  } else if (model.costPerImage) {
     totalUSD = model.costPerImage
-    breakdown = `flat rate per image`
-  } else if (type === 'video' && model.costPerSecond) {
-    totalUSD = model.costPerSecond * durationSeconds
-    breakdown = `${model.costPerSecond}/sec × ${durationSeconds}s`
-  } else if (type === 'audio' && model.costPerKChars) {
-    const chars = wordCount * 5
-    totalUSD = (chars / 1000) * model.costPerKChars
-    breakdown = `~${chars} chars @ $${model.costPerKChars}/1K`
+    breakdown = 'per image'
+  } else if (model.costPerSecond) {
+    totalUSD = model.costPerSecond * duration
+    breakdown = `${duration}s @ $${model.costPerSecond}/s`
+  } else if (model.costPerKChars) {
+    const chars = prompt.length
+    totalUSD = (chars / 1000) * (model.costPerKChars / 1000)
+    breakdown = `${chars} chars`
   }
 
   return { model, totalUSD, breakdown }
-}
-
-export function getDuration(prompt: string): number {
-  const match = prompt.match(/(\d+)\s*(second|sec|minute|min)/i)
-  if (!match) return 8
-  const val = parseInt(match[1])
-  return match[2].toLowerCase().startsWith('min') ? Math.min(val * 60, 60) : Math.min(val, 60)
 }
